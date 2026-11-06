@@ -27,7 +27,7 @@ for (const [i, h] of (hashes.length ? hashes : [""]).entries()) {
   await page.waitForFunction(() => document.querySelector("#loading")?.hidden, null, { timeout: 60000 });
   console.log("loaded", h, Date.now() - t0, "ms");
   if (process.env.JS) console.log(await page.evaluate(process.env.JS));
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(Number(process.env.WAIT || 1500));
   await page.screenshot({ path: `${out}/shot-${i}.png` });
 }
 await browser.close();

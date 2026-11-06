@@ -6,7 +6,7 @@
 export const PART = { BODY: 0, FORE: 1, HIND: 2, HEAD: 3, TAIL: 4, HOOF: 5 };
 
 // ---------- primitivas ----------
-function sdEllipsoid(px, py, pz, cx, cy, cz, rx, ry, rz) {
+export function sdEllipsoid(px, py, pz, cx, cy, cz, rx, ry, rz) {
   const x = (px - cx) / rx, y = (py - cy) / ry, z = (pz - cz) / rz;
   const k0 = Math.sqrt(x * x + y * y + z * z);
   const x1 = x / rx, y1 = y / ry, z1 = z / rz;
@@ -15,7 +15,7 @@ function sdEllipsoid(px, py, pz, cx, cy, cz, rx, ry, rz) {
 }
 
 // cono redondeado entre dos esferas (a, ra) y (b, rb)
-function sdRoundCone(px, py, pz, ax, ay, az, ra, bx, by, bz, rb) {
+export function sdRoundCone(px, py, pz, ax, ay, az, ra, bx, by, bz, rb) {
   const bax = bx - ax, bay = by - ay, baz = bz - az;
   const pax = px - ax, pay = py - ay, paz = pz - az;
   const l2 = bax * bax + bay * bay + baz * baz;
@@ -25,15 +25,21 @@ function sdRoundCone(px, py, pz, ax, ay, az, ra, bx, by, bz, rb) {
   return Math.sqrt(qx * qx + qy * qy + qz * qz) - (ra + (rb - ra) * h);
 }
 
-function sdRoundBox(px, py, pz, cx, cy, cz, hx, hy, hz, r) {
+export function sdRoundBox(px, py, pz, cx, cy, cz, hx, hy, hz, r) {
   const qx = Math.abs(px - cx) - hx, qy = Math.abs(py - cy) - hy, qz = Math.abs(pz - cz) - hz;
   const mx = Math.max(qx, 0), my = Math.max(qy, 0), mz = Math.max(qz, 0);
   return Math.sqrt(mx * mx + my * my + mz * mz) + Math.min(Math.max(qx, qy, qz), 0) - r;
 }
 
-function smin(a, b, k) {
+export function smin(a, b, k) {
   const h = Math.max(k - Math.abs(a - b), 0) / k;
   return Math.min(a, b) - h * h * k * 0.25;
+}
+
+export function sdBox(px, py, pz, cx, cy, cz, hx, hy, hz) {
+  const qx = Math.abs(px - cx) - hx, qy = Math.abs(py - cy) - hy, qz = Math.abs(pz - cz) - hz;
+  const mx = Math.max(qx, 0), my = Math.max(qy, 0), mz = Math.max(qz, 0);
+  return Math.sqrt(mx * mx + my * my + mz * mz) + Math.min(Math.max(qx, qy, qz), 0);
 }
 
 // Cada primitiva: [parte, función de distancia, suavizado al unirse]

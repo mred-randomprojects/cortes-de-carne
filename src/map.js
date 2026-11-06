@@ -105,14 +105,16 @@ function fillPoly(buf, channel, pts, value, mode) {
 
 export function buildMaps({ hump }) {
   const n = MAP.W * MAP.H * 4;
-  const body = new Uint8Array(n), limb = new Uint8Array(n);
+  const body = new Uint8Array(n), limb = new Uint8Array(n), deep = new Uint8Array(n);
+  const SCAP = new Set(["marucha", "chingolo", "paleta"]);
+  for (const [id, pts] of [...BODY.filter(([id]) => !SCAP.has(id)), ...THIGH]) fillPoly(deep, 0, pts, atomIndex(id));
   const bitOf = (id) => ATOMS.find((a) => a.id === id).bit;
   for (const [id, pts] of [...BODY, ...THIGH, ...(hump ? HUMP : [])]) fillPoly(body, 0, pts, atomIndex(id));
   for (const [id, pts] of [...THIGH, ...LIMB]) fillPoly(limb, 0, pts, atomIndex(id));
   for (const [id, pts] of LAYERS_BODY) fillPoly(body, 1, pts, bitOf(id), "or");
   for (const [id, pts] of LAYERS_LIMB) fillPoly(limb, 1, pts, bitOf(id), "or");
-  for (let o = 3; o < n; o += 4) { body[o] = 255; limb[o] = 255; }
-  return { body, limb };
+  for (let o = 3; o < n; o += 4) { body[o] = 255; limb[o] = 255; deep[o] = 255; }
+  return { body, limb, deep };
 }
 
 // Polígonos para dibujar en las herramientas de calibración.

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cortes de la vaca</title>
-<meta name="description" content="Vaca en 3D con los cortes de carne y sus nombres en Argentina, Tucumán, Brasil, Chile y EE.UU.">
+<meta name="description" content="Res en 3D con cada corte de carne en volumen y sus nombres en Argentina, Tucumán, Brasil, Chile y EE.UU.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥩</text></svg>">
 <style>
 :root {
@@ -60,7 +60,12 @@ details li { margin: 6px 0; }
 details a { color: var(--accent); }
 main { position: relative; overflow: hidden; }
 #view { width: 100%; height: 100%; display: block; touch-action: none; }
-.tools { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.tools { position: absolute; top: 12px; right: 12px; left: 12px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; pointer-events: none; }
+.tools > * { pointer-events: auto; }
+.tools .row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.sliders { display: flex; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 6px 12px; flex-wrap: wrap; justify-content: flex-end; }
+.sliders label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.sliders input { width: 130px; accent-color: var(--accent); }
 .tools button[aria-pressed="true"] { background: var(--ink); color: var(--panel); border-color: var(--ink); }
 #labels { position: absolute; inset: 0; pointer-events: none; }
 .label {
@@ -105,6 +110,7 @@ table.names tr.cur td, table.names tr.cur th { color: var(--accent); font-weight
   #info { position: static; width: auto; max-width: none; max-height: none; box-shadow: none; margin-bottom: 14px; }
   #info:not(.open) { padding: 8px 12px; }
   .tools button { padding: 5px 10px; font-size: 13px; }
+  .sliders input { width: 100px; }
 }
 </style>
 <script type="importmap">
@@ -125,7 +131,7 @@ table.names tr.cur td, table.names tr.cur th { color: var(--accent); font-weight
     <div id="cuts"></div>
     <details>
       <summary>Fuentes y precisión</summary>
-      <p>Los límites de cada corte siguen el manual de SENASA: vértebras, costillas y músculos de cada trozo, proyectados sobre una vaca modelada a mano. Es un esquema fiel a la anatomía, no un escaneo: los bordes reales varían según el carnicero.</p>
+      <p>Cada corte es una pieza en volumen de la media res (la res se divide en dos por la columna y se vacía). Los límites siguen el manual de SENASA: las vértebras, costillas y músculos de cada trozo; en el muslo, los cortes se reparten alrededor del fémur como dice el manual. La vaca y el esqueleto están modelados a mano: es un esquema fiel a la anatomía, no un escaneo, y los bordes reales varían según el carnicero. Las capas finas (matambre, tapas) están algo engrosadas para que se vean.</p>
       <p>Los nombres de otros países no siempre equivalen uno a uno, porque cada país despieza distinto. Las equivalencias aproximadas llevan «≈».</p>
       <ul id="sources"></ul>
     </details>
@@ -135,10 +141,17 @@ table.names tr.cur td, table.names tr.cur th { color: var(--accent); font-weight
     <div id="labels"></div>
     <div id="tip" hidden></div>
     <div class="tools">
-      <button id="t-labels" type="button" aria-pressed="true">Nombres</button>
-      <button id="t-xray" type="button" aria-pressed="false">Ver por dentro</button>
-      <button id="t-hump" type="button" aria-pressed="false">Cebú (giba)</button>
-      <button id="t-reset" type="button">Centrar</button>
+      <div class="row">
+        <button id="t-labels" type="button" aria-pressed="true">Nombres</button>
+        <button id="t-skel" type="button" aria-pressed="true">Huesos</button>
+        <button id="t-half" type="button" aria-pressed="false">Media res</button>
+        <button id="t-hump" type="button" aria-pressed="false">Cebú (giba)</button>
+        <button id="t-reset" type="button">Centrar</button>
+      </div>
+      <div class="sliders">
+        <label>Despiece <input id="s-explode" type="range" min="0" max="1" step="0.01" value="0"></label>
+        <label>Corte <input id="s-cut" type="range" min="0" max="1" step="0.005" value="1"></label>
+      </div>
     </div>
     <div id="info"></div>
     <div id="loading">Armando la vaca…</div>
